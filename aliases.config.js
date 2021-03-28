@@ -6,6 +6,8 @@ function resolveSrc(_path) {
 const aliases = {
   '@': 'src',
   script: 'src/script',
+  components: 'src/components',
+  utilities: 'src/utilities',
 }
 
 module.exports = {

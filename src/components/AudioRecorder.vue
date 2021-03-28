@@ -1,13 +1,16 @@
 <template>
-  <div>hej</div>
+  <Recorder :src="''"></Recorder>
 </template>
+<!-- <Recorder :microphoneid="index" :src="'getAudioSrc(select)'" :key="'Rec' + index"></Recorder> -->
 
 <script lang="ts">
+import Recorder from '@/components/Recorder.vue'
+
 import Vue from 'vue'
 export default Vue.extend({
-  // components: {
-  //   New,
-  // },
+  components: {
+    Recorder,
+  },
   props: {
     obj: { type: Object, default: () => ({}) },
     arr: { type: Array, default: () => [] },
