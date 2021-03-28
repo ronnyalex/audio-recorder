@@ -6,12 +6,16 @@ import AudioPlayer from '@/components/AudioPlayer.vue'
 import AudioRecorder from '@/components/AudioRecorder.vue'
 import IconButton from '@/components/IconButton.vue'
 import Recorder from '@/components/Recorder.vue'
+import LineControl from '@/components/LineControl.vue'
+import VolumeControl from '@/components/VolumeControl.vue'
 
 const elements = {
   AudioPlayer,
   AudioRecorder,
   IconButton,
   Recorder,
+  LineControl,
+  VolumeControl,
 }
 
 function install(Vue) {

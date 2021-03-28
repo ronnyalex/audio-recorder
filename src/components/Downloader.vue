@@ -1,5 +1,5 @@
 <template>
-  <icon-button id="download" class="ar-icon ar-icon__xs ar-icon--no-border" name="download" @click.native="download" />
+  <icon-button id="download" class="ar-icon ar-icon__lg ar-icon--no-border" name="download" @click.native="download" />
 </template>
 
 <script>
@@ -28,3 +28,11 @@ export default {
   },
 }
 </script>
+<style lang="less" scoped>
+.ar-icon__lg {
+  width: 45px;
+  height: 45px;
+  line-height: 45px;
+  box-shadow: 0 2px 5px 1px rgb(158 158 158 / 50%);
+}
+</style>

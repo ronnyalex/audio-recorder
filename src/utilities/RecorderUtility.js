@@ -1,84 +1,86 @@
-import Mp3Encoder from '@/utilities/Mp3Encoder.js'
-export function convertTimeMMSS(seconds) {
-  return seconds === undefined ? undefined : new Date(seconds * 1000).toISOString().substr(14, 5) // MMss, den går 14 steg och tar 5 chars
-}
+// import Encoder from '@/utilities/Mp3Encoder.js'
+
 export default class Recorder {
-  constructor(options = {}) {
-    this.beforeRecording = options.beforeRecording
-    this.pauseRecording = options.pauseRecording
-    this.afterRecording = options.afterRecording
-    this.micFailed = options.micFailed
-    this.format = options.format
+  constructor() {
+    this.mediaRecorder = null
 
-    this.encoderOptions = {
-      bitRate: options.bitRate,
-      sampleRate: options.sampleRate,
+    this.chunks = []
+    this.media = {
+      tag: 'audio',
+      type: 'audio/webm; codecs=opus',
+      ext: '.webm',
+      gUM: { audio: true },
     }
-
-    this.bufferSize = 4096
-    this.records = []
-
     this.isPause = false
     this.isRecording = false
-
+    this.blob = null
     this.duration = 0
+    this.startPoint = null
+    this.stopPoint = null
+    this.newDate = null
+    this.dateBefore = null
     this.volume = 0
 
     this._duration = 0
+    this.oldDuration = 0
   }
 
   start() {
-    const constraints = {
-      video: false,
-      audio: {
-        channelCount: 1,
-        echoCancellation: false,
-      },
-    }
+    navigator.mediaDevices.getUserMedia(this.media.gUM).then((stream) => {
+      let chunks = []
+      this.isPause = false
 
-    this.beforeRecording && this.beforeRecording('start recording')
+      this.isRecording = true
+      this.mediaRecorder = new MediaRecorder(stream)
 
-    navigator.mediaDevices.getUserMedia(constraints).then(this._micCaptured.bind(this)).catch(this._micError.bind(this))
+      this.mediaRecorder.addEventListener('dataavailable', (event) => {
+        console.log('dataavailable')
+        chunks.push(event.data)
+      })
+      // this.mediaRecorder.addEventListener('start', (event) => {
+      //   console.log('event', event)
+      //   console.log('dataavailable')
+      // })
+      this.dateBefore = new Date()
+      // this.mediaRecorder.addEventListener('stop', () => {
+      //   this.duration = (new Date() - this.dateBefore) / 1000
+      // })
+      this.mediaRecorder.addEventListener('dataavailable', () => {
+        if (this.isRecording === true) {
+          this.newDate = new Date()
+          this._duration = (this.newDate - this.dateBefore) / 1000 + this.oldDuration
+          console.log('this._duration', this._duration)
+          this.oldDuration = this._duration
+          this.dateBefore = this.newDate
+        }
+      })
 
-    this.isPause = false
-    this.isRecording = true
-
-    if (!this.lameEncoder) {
-      this.lameEncoder = new Mp3Encoder(this.encoderOptions)
-    }
+      this.chunks = chunks
+      this.mediaRecorder.start(1000)
+    })
   }
 
   stop() {
-    this.stream.getTracks().forEach((track) => track.stop())
-    this.input.disconnect()
-    this.processor.disconnect()
-    this.context.close()
-
-    let record = null
-
-    record = this.lameEncoder.finish()
-
-    record.duration = convertTimeMMSS(this.duration)
-    this.records.push(record)
-
-    this._duration = 0
-    this.duration = 0
-
-    this.isPause = false
+    this.mediaRecorder.stop()
     this.isRecording = false
-
-    this.afterRecording && this.afterRecording(record)
+    this.duration = this._duration
+    this.blob = new Blob(this.chunks, { type: this.media.type })
   }
 
   pause() {
-    this.stream.getTracks().forEach((track) => track.stop())
-    this.input.disconnect()
-    this.processor.disconnect()
-
-    this._duration = this.duration
     this.isPause = true
+    this.mediaRecorder.pause()
+    // this.pausePoint = new Date()
+    // this._duration = (new Date() - this.startPoint) / 1000
+  }
 
-    this.pauseRecording && this.pauseRecording('pause recording')
+  getRecord() {
+    return {
+      id: Date.now(),
+      blob: this.blob,
+      url: URL.createObjectURL(this.blob),
+      duration: this.duration,
+    }
   }
 
   recordList() {
@@ -88,37 +90,27 @@ export default class Recorder {
   lastRecord() {
     return this.records.slice(-1)
   }
+}
 
-  _micCaptured(stream) {
-    this.context = new (window.AudioContext || window.webkitAudioContext)()
-    this.duration = this._duration
-    this.input = this.context.createMediaStreamSource(stream)
-    this.processor = this.context.createScriptProcessor(this.bufferSize, 1, 1)
-    this.stream = stream
+export function convertTimeMMSS(seconds) {
+  return seconds === undefined ? undefined : new Date(seconds * 1000).toISOString().substr(14, 5) // MMss, den går 14 steg och tar 5 chars
+}
 
-    this.processor.onaudioprocess = (ev) => {
-      const sample = ev.inputBuffer.getChannelData(0)
-      let sum = 0.0
+export function calculateLineHeadPosition(ev, element) {
+  const progressWidth = element.getBoundingClientRect().width
+  const leftPosition = ev.target.getBoundingClientRect().left
+  let pos = (ev.clientX - leftPosition) / progressWidth
 
-      this.lameEncoder.encode(sample)
+  // try {
+  //   if (!ev.target.className.match(/^ar\-line\-control/)) {
+  //     return
+  //   }
+  // } catch (err) {
+  //   return
+  // }
 
-      for (let i = 0; i < sample.length; ++i) {
-        sum += sample[i] * sample[i]
-      }
+  pos = pos < 0 ? 0 : pos
+  pos = pos > 1 ? 1 : pos
 
-      this.duration = parseFloat(this._duration) + parseFloat(this.context.currentTime.toFixed(2))
-      this.volume = Math.sqrt(sum / sample.length).toFixed(2)
-    }
-
-    this.input.connect(this.processor)
-    this.processor.connect(this.context.destination)
-  }
-
-  _micError(error) {
-    this.micFailed && this.micFailed(error)
-  }
-
-  _isMp3() {
-    return this.format.toLowerCase() === 'mp3'
-  }
+  return pos
 }

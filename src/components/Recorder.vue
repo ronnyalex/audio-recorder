@@ -11,16 +11,11 @@
           }"
           @click.native="toggleRecorder"
         />
-        <IconButton
-          v-if="isRecording"
-          class="ar-icon ar-icon__sm ar-recorder__stop"
-          name="stop"
-          @click.native="stopRecorder"
-        />
+        <IconButton class="ar-icon ar-icon__sm ar-recorder__stop" name="stop" @click.native="stopRecorder" />
       </div>
 
       <!-- <div class="ar-recorder__records-limit" v-if="attempts">Attempts: {{attemptsLeft}}/{{attempts}}</div> -->
-      <div class="ar-recorder__duration" style="font-size: 12px" v-if="isRecording">{{ recordedTime }}</div>
+      <div class="ar-recorder__duration">{{ recordedTime }}</div>
       <!-- <div class="ar-recorder__time-limit" v-if="time">Record duration is limited: {{time}}m</div> -->
 
       <div class="ar-records" v-if="audioObject.id || srcAudio !== ''">
@@ -29,9 +24,7 @@
           class="ar-records__record"
           :class="{ 'ar-records__record--selected': audioObject.id }"
         >
-          <!-- <div class="ar__text">Record {{idx + 1}}</div> -->
-          <!-- <div class="ar__text">Tid</div> -->
-          <div class="ar__text" style="font-size: 12px">{{ audioObject.duration }}</div>
+          <!-- <div class="ar__text">{{ audioObject.duration }}</div> -->
           <AudioPlayer
             v-if="(audioObject.id || srcAudio !== '') && showDownloadButton"
             @getUrlFromPlayerSource="displayUrl"
@@ -102,15 +95,7 @@ export default {
     return {
       // selections: selections,
 
-      recorder: new RecorderUtility({
-        beforeRecording: this.beforeRecording,
-        afterRecording: this.afterRecording,
-        pauseRecording: this.pauseRecording,
-        micFailed: this.micFailed,
-        bitRate: this.bitRate,
-        sampleRate: this.sampleRate,
-        format: this.format,
-      }),
+      recorder: new RecorderUtility(),
       srcAudio: this.src,
       recordList: [],
       audioObject: {},
@@ -138,12 +123,12 @@ export default {
       return this.recorder.isRecording
     },
     recordedTime() {
-      if (this.time && this.recorder.duration >= this.time * 60) {
+      if (this.time && this.recorder._duration >= this.time * 60) {
         this.stopRecorder()
       }
       // console.log(this.recorder.duration)
 
-      return convertTimeMMSS(this.recorder.duration)
+      return convertTimeMMSS(this.recorder._duration)
     },
     volume() {
       return parseFloat(this.recorder.volume)
@@ -172,9 +157,13 @@ export default {
       }
       try {
         this.recorder.stop()
-        this.audioObject = this.recorder.recordList()[0]
-        this.recorder.records = []
+        setTimeout(() => {
+          this.audioObject = this.recorder.getRecord()
+          console.log('this.audioObject', this.audioObject)
+        }, 200)
+        // this.recorder.records = []
       } catch (error) {
+        console.log('error', error)
         alert('Du måste ha tillgång till mikrofon och även godkänna användandet av mikrofon.')
       }
     },
@@ -189,26 +178,58 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.ar-recorder {
-  position: relative;
+.ar-content {
+  padding: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  .ar-icon {
-    fill: #747474;
-    border-radius: 50%;
-    border: 1px solid #05cbcd;
-    background-color: #ffffff;
-    padding: 5px;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  .ar-icon__lg {
-    width: 45px;
-    height: 45px;
-    line-height: 45px;
-    box-shadow: 0 2px 5px 1px rgb(158 158 158 / 50%);
+  .ar-recorder {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .ar-icon {
+      fill: #747474;
+      border-radius: 50%;
+      border: 1px solid #05cbcd;
+      background-color: #ffffff;
+      padding: 5px;
+      cursor: pointer;
+      transition: 0.2s;
+      &__lg {
+        width: 45px;
+        height: 45px;
+        line-height: 45px;
+        box-shadow: 0 2px 5px 1px rgb(158 158 158 / 50%);
+      }
+      &__sm {
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+      }
+    }
+
+    &__duration {
+      color: #aeaeae;
+      font-size: 32px;
+      font-weight: 500;
+      margin-top: 20px;
+      margin-bottom: 16px;
+    }
+    &__stop {
+      position: absolute;
+      top: 10px;
+      right: -52px;
+    }
+    &__duration {
+      color: #aeaeae;
+      font-size: 32px;
+      font-weight: 500;
+      margin-top: 20px;
+      margin-bottom: 16px;
+    }
   }
 }
 </style>

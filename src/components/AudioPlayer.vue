@@ -11,14 +11,15 @@
     </div>
 
     <div class="ar-player-bar">
-      <div class="ar-player__time" style="font-size: 12px">{{ playedTime }}</div>
-      <!-- <line-control
+      <div class="ar-player__time">{{ playedTime }}</div>
+      <line-control
         class="ar-player__progress"
         ref-id="progress"
         :percentage="progress"
-        @change-linehead="_onUpdateProgress"/> -->
-      <!-- <div class="ar-player__time">{{duration}}</div> -->
-      <!-- <volume-control @change-volume="_onChangeVolume"/> -->
+        @change-linehead="_onUpdateProgress"
+      />
+      <div class="ar-player__time">{{ duration }}</div>
+      <volume-control @change-volume="_onChangeVolume" />
     </div>
 
     <!-- Den väljer nere i audioSource om den ska ta record eller src -->
@@ -29,10 +30,14 @@
 <script>
 import { convertTimeMMSS } from '@/utilities/RecorderUtility.js'
 import IconButton from '@/components/IconButton.vue'
+import LineControl from '@/components/LineControl.vue'
+import VolumeControl from '@/components/VolumeControl.vue'
 
 export default {
   components: {
     IconButton,
+    LineControl,
+    VolumeControl,
   },
 
   props: {
@@ -50,6 +55,7 @@ export default {
   },
   mounted: function () {
     this.player = document.getElementById(this.playerUniqId)
+    console.log(' this.player', this.player)
 
     this.player.addEventListener('ended', () => {
       this.isPlaying = false
@@ -57,7 +63,7 @@ export default {
 
     this.player.addEventListener('loadeddata', () => {
       this._resetProgress()
-      this.duration = convertTimeMMSS(this.player.duration)
+      this.duration = convertTimeMMSS(this.record.duration)
     })
 
     this.player.addEventListener('timeupdate', this._onTimeUpdate)
@@ -70,8 +76,10 @@ export default {
     audioSource() {
       if (this.record) {
         const url = this.src || this.record.url
+        console.log('url', url)
         if (url) {
           this.$emit('getUrlFromPlayerSource', url)
+          console.log('audiosource', this.record)
           return url
         } else {
           this._resetProgress()
@@ -94,6 +102,14 @@ export default {
       if (!this.audioSource) {
         return
       }
+
+      // var reader = new FileReader()
+      //   reader.readAsDataURL(this.record.blob)
+      //   console.log('this.record.blob', this.record.blob)
+      //   reader.onloadend = function () {
+      //     var base64data = reader.result
+      //     console.log(base64data)
+      //   }
 
       if (this.isPlaying) {
         this.player.pause()
@@ -140,4 +156,62 @@ export default {
   },
 }
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.ar-player {
+  border: 1px solid #e8e8e8;
+  border-radius: 24px;
+  margin: 0 0 0 5px;
+
+  width: 380px;
+  height: unset;
+  border: 0;
+  border-radius: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: unset;
+  font-family: 'Roboto', sans-serif;
+  .ar-player-actions {
+    width: 55%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+  & > .ar-player-bar {
+    border: 1px solid #e8e8e8;
+    border-radius: 24px;
+    margin: 0 0 0 5px;
+  }
+  .ar-player-bar {
+    display: flex;
+    align-items: center;
+    height: 38px;
+    padding: 0 12px;
+    margin: 0 5px;
+    .ar-player__time {
+      color: rgba(84, 84, 84, 0.5);
+      font-size: 16px;
+      width: 41px;
+    }
+    & > .ar-player__progress {
+      width: 125px;
+    }
+  }
+  .ar-icon {
+    fill: #747474;
+    border-radius: 50%;
+    border: 1px solid #05cbcd;
+    background-color: #ffffff;
+    padding: 5px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .ar-icon__lg {
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    box-shadow: 0 2px 5px 1px rgb(158 158 158 / 50%);
+  }
+}
+</style>
