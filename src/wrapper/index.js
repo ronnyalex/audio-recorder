@@ -1,11 +1,13 @@
 //.src/wrapper/index.js
 
-import component from '@/components/AudioRecorder.vue'
+import AudioRecorder from '@/components/AudioRecorder.vue'
+import AudioPlayer from '@/components/AudioPlayer.vue'
 
 function install(Vue) {
   if (install.installed) return
   install.installed = true
-  Vue.component('AudioRecorder', component)
+  Vue.component('AudioRecorder', AudioRecorder)
+  Vue.component('AudioPlayer', AudioPlayer)
 }
 
 const plugin = {
@@ -22,7 +24,5 @@ if (typeof window !== 'undefined') {
 if (GlobalVue) {
   GlobalVue.use(plugin)
 }
-
-component.install = install
-
-export default component
+export { install, AudioRecorder, AudioPlayer }
+export default { install, AudioRecorder }

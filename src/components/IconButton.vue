@@ -1,5 +1,5 @@
 <template>
-  <div v-html="icons[name]"></div>
+  <div v-html="icons[name]" @click="$emit('clickSVG')"></div>
 </template>
 
 <script>

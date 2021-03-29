@@ -33,7 +33,9 @@ export default {
   },
   computed: {
     calculateSize() {
+      // Volume control needs to be times 100
       const value = this.percentage < 1 ? this.percentage * 100 : this.percentage
+      // const value = this.percentage
       return `${this.rowDirection ? 'width' : 'height'}: ${value}%`
     },
   },

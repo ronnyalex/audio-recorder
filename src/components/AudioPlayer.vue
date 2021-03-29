@@ -6,7 +6,7 @@
         class="ar-icon ar-icon__lg ar-player__play"
         :name="playBtnIcon"
         :class="{ 'ar-player__play--active': isPlaying }"
-        @click.native="playback"
+        @clickSVG="playback"
       />
     </div>
 
@@ -45,6 +45,11 @@ export default {
     record: { type: Object },
     filename: { type: String },
   },
+  // watch: {
+  //   src(newValue) {
+  //     console.log('newValue', newValue)
+  //   },
+  // },
   data() {
     return {
       isPlaying: false,
@@ -55,15 +60,31 @@ export default {
   },
   mounted: function () {
     this.player = document.getElementById(this.playerUniqId)
-    console.log(' this.player', this.player)
 
     this.player.addEventListener('ended', () => {
       this.isPlaying = false
     })
 
+    this.player.addEventListener('durationchange', async (e) => {
+      if (e.target.duration === Infinity) {
+        while (e.target.duration === Infinity) {
+          //Ett hack för att duration ska laddas
+          await new Promise((r) => setTimeout(r, 200))
+          this.player.currentTime = 10000000 * Math.random()
+        }
+        this.player.currentTime = 0
+        this.duration = convertTimeMMSS(this.player.duration)
+      } else {
+        setTimeout(() => {
+          this.player.currentTime = 0
+          this.duration = convertTimeMMSS(e.target.duration)
+        }, 100)
+      }
+    })
+
     this.player.addEventListener('loadeddata', () => {
       this._resetProgress()
-      this.duration = convertTimeMMSS(this.record.duration)
+      // this.duration = convertTimeMMSS(this.record.duration)
     })
 
     this.player.addEventListener('timeupdate', this._onTimeUpdate)
@@ -74,22 +95,18 @@ export default {
   },
   computed: {
     audioSource() {
-      if (this.record) {
-        const url = this.src || this.record.url
-
-        if (url) {
-          let blob = this.record.blob
-          this.$emit('getBlobFromPlayerSource', blob)
-          return url
-        } else {
-          this._resetProgress()
-          return ''
-        }
+      if (this.record?.url) {
+        let blob = this.record.blob
+        this.$emit('getBlobFromPlayerSource', blob)
+        return this.record.url
+      } else if (this.src) {
+        return this.src
       } else {
         this._resetProgress()
         return ''
       }
     },
+
     playBtnIcon() {
       return this.isPlaying ? 'pause' : 'play'
     },
@@ -125,19 +142,23 @@ export default {
       if (this.isPlaying) {
         this.player.pause()
       }
-
       this.duration = convertTimeMMSS(0)
       this.playedTime = convertTimeMMSS(0)
       this.progress = 0
       this.isPlaying = false
     },
     _onTimeUpdate() {
-      this.playedTime = convertTimeMMSS(this.player.currentTime)
-      this.progress = (this.player.currentTime / this.player.duration) * 100
+      if (this.duration !== convertTimeMMSS(0) && this.player.currentTime > 1) {
+        //Hacket ovanför gör att progress och playedTime hoppar. Vi tittar här om duration har uppdaterats
+        //this.player.currentTime > 1 är för att progress hoppar mellan 0 och 1 på grund av att volume jobbar mellan 0 och 1 men inte duration
+        this.playedTime = convertTimeMMSS(this.player.currentTime)
+        this.progress = (this.player.currentTime / this.player.duration) * 100
+      }
     },
     _onUpdateProgress(pos) {
       if (pos) {
         this.player.currentTime = pos * this.player.duration
+        console.log('this.player.duration', this.player.duration)
       }
     },
     _onChangeVolume(val) {

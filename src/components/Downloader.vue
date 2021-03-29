@@ -1,5 +1,5 @@
 <template>
-  <icon-button id="download" class="ar-icon ar-icon__lg ar-icon--no-border" name="download" @click.native="download" />
+  <icon-button id="download" class="ar-icon ar-icon__lg ar-icon--no-border" name="download" @clickSvg="download" />
 </template>
 
 <script>

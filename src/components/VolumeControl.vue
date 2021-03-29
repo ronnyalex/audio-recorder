@@ -12,7 +12,7 @@ import LineControl from '@/components/LineControl.vue'
 export default {
   data() {
     return {
-      volume: 0.8,
+      volume: 80,
     }
   },
   components: {

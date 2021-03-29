@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <AudioRecorder :src="''" @onExportedDataUrl="sendFile"></AudioRecorder>
+    <AudioRecorder :src="audioUrl" @onExportedDataUrl="sendFile"></AudioRecorder>
   </div>
 </template>
 <!-- <Recorder :microphoneid="index" :src="'getAudioSrc(select)'" :key="'Rec' + index"></Recorder> -->
@@ -13,6 +13,13 @@ export default Vue.extend({
   name: 'App',
   components: {
     AudioRecorder,
+  },
+  data() {
+    return {
+      audioUrl: '',
+      // audioUrl:
+      //   'https://firebasestorage.googleapis.com/v0/b/km-firebase-68496.appspot.com/o/development%2Fteachers%2F4874%2Fclasses%2F67979%2Ftestid%2F441729%2Fbilagor%2F1617009842253YL9i08AOlb.webm?alt=media&token=2bf36ed4-e48a-4d2a-aa5b-32ae73262f64',
+    }
   },
   methods: {
     sendFile(dataUrl: any) {
