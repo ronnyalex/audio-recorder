@@ -34,7 +34,6 @@ export default class Recorder {
       this.mediaRecorder = new MediaRecorder(stream)
 
       this.mediaRecorder.addEventListener('dataavailable', (event) => {
-        console.log('dataavailable')
         chunks.push(event.data)
       })
       // this.mediaRecorder.addEventListener('start', (event) => {
@@ -49,7 +48,6 @@ export default class Recorder {
         if (this.isRecording === true) {
           this.newDate = new Date()
           this._duration = (this.newDate - this.dateBefore) / 1000 + this.oldDuration
-          console.log('this._duration', this._duration)
           this.oldDuration = this._duration
           this.dateBefore = this.newDate
         }

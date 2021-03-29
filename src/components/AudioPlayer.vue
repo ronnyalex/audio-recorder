@@ -159,7 +159,6 @@ export default {
     _onUpdateProgress(pos) {
       if (pos) {
         this.player.currentTime = pos * this.player.duration
-        console.log('this.player.duration', this.player.duration)
       }
     },
     _onChangeVolume(val) {

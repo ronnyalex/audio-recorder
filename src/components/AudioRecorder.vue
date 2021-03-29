@@ -209,7 +209,6 @@ export default {
     },
     setAudio(e) {
       const file = e.target.files[0]
-      console.log('file', file)
       if (file.type.indexOf('audio/') === -1) {
         alert('Please select an audio file')
         return
