@@ -10,7 +10,6 @@ import { calculateLineHeadPosition } from '@/utilities/RecorderUtility.js'
 export default {
   props: {
     refId: { type: String },
-    eventName: { type: String },
     percentage: { type: Number, default: 0 },
     rowDirection: { type: Boolean, default: true },
   },

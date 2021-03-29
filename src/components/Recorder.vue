@@ -24,12 +24,13 @@
           class="ar-records__record"
           :class="{ 'ar-records__record--selected': audioObject.id }"
         >
-          <!-- <div class="ar__text">{{ audioObject.duration }}</div> -->
+          <!-- @getUrlFromPlayerSource="sourceUrl" -->
           <AudioPlayer
             v-if="(audioObject.id || srcAudio !== '') && showDownloadButton"
-            @getUrlFromPlayerSource="displayUrl"
             :record="audioObject"
+            @getBlobFromPlayerSource="getBlobFromPlayerSource"
             :src="srcAudio"
+            :filename="filename"
             :key="'mic_key' + microphoneid"
           />
           <div class="ar__rm" v-if="audioObject.id || srcAudio !== ''" @click="removeRecord(microphoneid)">
@@ -135,8 +136,16 @@ export default {
     },
   },
   methods: {
-    displayUrl(obj) {
-      console.log(obj)
+    async getBlobFromPlayerSource(blob) {
+      let promise = await this.blobToBase64(blob)
+      this.$emit('onExportedDataUrl', promise)
+    },
+    blobToBase64(blob) {
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result)
+        reader.readAsDataURL(blob)
+      })
     },
     toggleRecorder() {
       try {

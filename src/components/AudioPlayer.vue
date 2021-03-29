@@ -76,10 +76,10 @@ export default {
     audioSource() {
       if (this.record) {
         const url = this.src || this.record.url
-        console.log('url', url)
+
         if (url) {
-          this.$emit('getUrlFromPlayerSource', url)
-          console.log('audiosource', this.record)
+          let blob = this.record.blob
+          this.$emit('getBlobFromPlayerSource', blob)
           return url
         } else {
           this._resetProgress()
@@ -102,14 +102,6 @@ export default {
       if (!this.audioSource) {
         return
       }
-
-      // var reader = new FileReader()
-      //   reader.readAsDataURL(this.record.blob)
-      //   console.log('this.record.blob', this.record.blob)
-      //   reader.onloadend = function () {
-      //     var base64data = reader.result
-      //     console.log(base64data)
-      //   }
 
       if (this.isPlaying) {
         this.player.pause()
