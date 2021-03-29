@@ -22,10 +22,6 @@ export default Vue.extend({
       key: '',
     }
   },
-  created() {
-    console.log('hej')
-  },
-  methods: {},
 })
 </script>
 <style lang="less" scoped></style>
