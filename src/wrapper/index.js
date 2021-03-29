@@ -43,6 +43,14 @@ if (GlobalVue) {
   GlobalVue.use(plugin)
 }
 
-component.install = install
+export { AudioPlayer, AudioRecorder, IconButton, Recorder, LineControl, VolumeControl }
 
-export default component
+export default {
+  install,
+  AudioPlayer,
+  AudioRecorder,
+  IconButton,
+  Recorder,
+  LineControl,
+  VolumeControl,
+}
