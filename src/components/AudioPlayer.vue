@@ -34,6 +34,7 @@ import LineControl from '@/components/LineControl.vue'
 import VolumeControl from '@/components/VolumeControl.vue'
 
 export default {
+  name: 'AudioPlayer',
   components: {
     IconButton,
     LineControl,

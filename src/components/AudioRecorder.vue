@@ -81,6 +81,7 @@ import RecorderUtility, { convertTimeMMSS } from '@/utilities/RecorderUtility.js
 import IconButton from '@/components/IconButton.vue'
 
 export default {
+  name: 'AudioRecorder',
   components: {
     IconButton,
     AudioPlayer,
