@@ -1,11 +1,11 @@
 //.src/wrapper/index.js
 
-import component from '@/components/Recorder.vue'
+import component from '@/components/AudioRecorder.vue'
 
 function install(Vue) {
   if (install.installed) return
   install.installed = true
-  Vue.component('Recorder', component)
+  Vue.component('AudioRecorder', component)
 }
 
 const plugin = {
