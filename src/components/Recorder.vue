@@ -36,12 +36,12 @@
           <div class="ar__rm" v-if="audioObject.id || srcAudio !== ''" @click="removeRecord(microphoneid)">
             <IconButton class="ar-icon ar-icon__sm ar-recorder__stop" name="trash" />
           </div>
-          <Downloader
+          <!-- <Downloader
             v-if="audioObject.id && showDownloadButton"
             class="ar__downloader"
             :record="audioObject"
             :filename="filename"
-          />
+          /> -->
 
           <!-- <uploader
               v-if="record.id === audioObject.id && showUploadButton"
@@ -58,7 +58,7 @@
 
 <script>
 import AudioPlayer from '@/components/AudioPlayer.vue'
-import Downloader from '@/components/Downloader.vue'
+// import Downloader from '@/components/Downloader.vue'
 import RecorderUtility, { convertTimeMMSS } from '@/utilities/RecorderUtility.js'
 import IconButton from '@/components/IconButton.vue'
 
@@ -66,7 +66,7 @@ export default {
   components: {
     IconButton,
     AudioPlayer,
-    Downloader,
+    // Downloader,
   },
 
   props: {
