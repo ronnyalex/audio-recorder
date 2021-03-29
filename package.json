@@ -5,10 +5,6 @@
   "author": "Ronny Alex",
   "homepage": "",
   "license": "MIT",
-  "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com/"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ronnyalex/audio-recorder.git"
