@@ -127,10 +127,6 @@ export default {
       received: false,
     }
   },
-  created() {
-    // console.log('this.audioObject', this.audioObject)
-    // console.log('this.srcAudio', this.srcAudio)
-  },
 
   computed: {
     iconButtonType() {

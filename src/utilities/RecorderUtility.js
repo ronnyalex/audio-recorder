@@ -15,46 +15,50 @@ export default class Recorder {
     this.isRecording = false
     this.blob = null
     this.duration = 0
-    this.startPoint = null
-    this.stopPoint = null
     this.newDate = null
     this.dateBefore = null
     this.volume = 0
 
     this._duration = 0
     this.oldDuration = 0
+    this.isInitiated = false
   }
 
   start() {
+    console.log('start')
+
     navigator.mediaDevices.getUserMedia(this.media.gUM).then((stream) => {
-      let chunks = []
-      this.isPause = false
-
-      this.isRecording = true
-      this.mediaRecorder = new MediaRecorder(stream)
-
-      this.mediaRecorder.addEventListener('dataavailable', (event) => {
-        chunks.push(event.data)
-      })
-      // this.mediaRecorder.addEventListener('start', (event) => {
-      //   console.log('event', event)
-      //   console.log('dataavailable')
-      // })
       this.dateBefore = new Date()
-      // this.mediaRecorder.addEventListener('stop', () => {
-      //   this.duration = (new Date() - this.dateBefore) / 1000
-      // })
-      this.mediaRecorder.addEventListener('dataavailable', () => {
-        if (this.isRecording === true) {
-          this.newDate = new Date()
-          this._duration = (this.newDate - this.dateBefore) / 1000 + this.oldDuration
-          this.oldDuration = this._duration
-          this.dateBefore = this.newDate
-        }
-      })
+      if (!this.isInitiated) {
+        this.mediaRecorder = new MediaRecorder(stream)
+        this.isInitiated = true
+        this.isPause = false
+        this.isRecording = true
+        this.chunks = []
+        this._duration = 0
+        this.oldDuration = 0
+        // this.mediaRecorder.addEventListener('stop', () => {
+        //   this.duration = (new Date() - this.dateBefore) / 1000
+        // })
+        this.mediaRecorder.addEventListener('dataavailable', (event) => {
+          if (this.isRecording === true && !this.isPause) {
+            this.chunks.push(event.data)
+            console.log('this.chunks', this.chunks)
+            this.newDate = new Date()
+            let secondsFromOldDuration = (this.newDate - this.dateBefore) / 1000
+            this._duration = secondsFromOldDuration + this.oldDuration
+            this.oldDuration = this._duration
+            this.dateBefore = this.newDate
+          }
+        })
+      }
 
-      this.chunks = chunks
-      this.mediaRecorder.start(1000)
+      if (this.isPause) {
+        this.mediaRecorder.resume()
+        this.isPause = false
+      } else {
+        this.mediaRecorder.start(1000)
+      }
     })
   }
 
@@ -63,13 +67,12 @@ export default class Recorder {
     this.isRecording = false
     this.duration = this._duration
     this.blob = new Blob(this.chunks, { type: this.media.type })
+    this.isInitiated = false
   }
 
   pause() {
     this.isPause = true
     this.mediaRecorder.pause()
-    // this.pausePoint = new Date()
-    // this._duration = (new Date() - this.startPoint) / 1000
   }
 
   getRecord() {
@@ -79,14 +82,6 @@ export default class Recorder {
       url: URL.createObjectURL(this.blob),
       duration: this.duration,
     }
-  }
-
-  recordList() {
-    return this.records
-  }
-
-  lastRecord() {
-    return this.records.slice(-1)
   }
 }
 
