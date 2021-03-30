@@ -341,6 +341,7 @@ export default {
 .reused-button {
   padding: 10px;
   text-decoration: bold;
+  outline: 0;
   text-transform: none;
   cursor: pointer;
   width: 100px;
