@@ -25,8 +25,6 @@ export default class Recorder {
   }
 
   start() {
-    console.log('start')
-
     navigator.mediaDevices.getUserMedia(this.media.gUM).then((stream) => {
       this.dateBefore = new Date()
       if (!this.isInitiated) {
@@ -43,7 +41,6 @@ export default class Recorder {
         this.mediaRecorder.addEventListener('dataavailable', (event) => {
           if (this.isRecording === true && !this.isPause) {
             this.chunks.push(event.data)
-            console.log('this.chunks', this.chunks)
             this.newDate = new Date()
             let secondsFromOldDuration = (this.newDate - this.dateBefore) / 1000
             this._duration = secondsFromOldDuration + this.oldDuration

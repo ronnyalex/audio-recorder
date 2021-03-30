@@ -67,7 +67,10 @@
       <div class="added-resource animation" style="margin-left: 0px">
         <div class="added-resource__wrapper" @click="showFileChooser">
           <span class="added-resource__wrapper__plus">+</span>
-          <span class="added-resource__wrapper__text">Ladda upp ljudfil</span>
+          <span class="added-resource__wrapper__text"
+            >Ladda upp ljudfil <br />
+            (max 4Mb)</span
+          >
         </div>
       </div>
     </div>
@@ -206,7 +209,11 @@ export default {
     setAudio(e) {
       const file = e.target.files[0]
       if (file.type.indexOf('audio/') === -1) {
-        alert('Please select an audio file')
+        alert('Du kan bara ladda upp ljudfiler')
+        return
+      }
+      if (file.size > 4000000) {
+        alert('Du får max ladda upp en fil med storlek 4Mb')
         return
       }
       if (typeof FileReader === 'function') {
