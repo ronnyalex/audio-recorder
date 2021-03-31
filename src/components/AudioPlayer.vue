@@ -61,15 +61,14 @@ export default {
   },
   mounted: function () {
     this.player = document.getElementById(this.playerUniqId)
-    this.player.src = this.record.url
     // if (/iPad|iPhone|iPod/.test(navigator.userAgent)) this.player.autoplay = true
     this.player.addEventListener('ended', () => {
       this.isPlaying = false
     })
 
     this.player.addEventListener('durationchange', async (e) => {
-      if (e.target.duration === Infinity) {
-        while (e.target.duration === Infinity) {
+      if (e.target?.duration === Infinity) {
+        while (e.target?.duration === Infinity) {
           //Ett hack för att duration ska laddas
           await new Promise((r) => setTimeout(r, 200))
           this.player.currentTime = 10000000 * Math.random()
@@ -79,7 +78,7 @@ export default {
       } else {
         setTimeout(() => {
           this.player.currentTime = 0
-          this.duration = convertTimeMMSS(e.target.duration)
+          this.duration = convertTimeMMSS(e.target?.duration)
         }, 100)
       }
     })
