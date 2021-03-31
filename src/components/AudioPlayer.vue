@@ -46,11 +46,11 @@ export default {
     record: { type: Object },
     filename: { type: String },
   },
-  // watch: {
-  //   src(newValue) {
-  //     console.log('newValue', newValue)
-  //   },
-  // },
+  watch: {
+    src(newValue) {
+      console.log('newValue', newValue)
+    },
+  },
   data() {
     return {
       isPlaying: false,
@@ -61,7 +61,8 @@ export default {
   },
   mounted: function () {
     this.player = document.getElementById(this.playerUniqId)
-
+    this.player.src = this.record.url
+    // if (/iPad|iPhone|iPod/.test(navigator.userAgent)) this.player.autoplay = true
     this.player.addEventListener('ended', () => {
       this.isPlaying = false
     })
@@ -99,6 +100,7 @@ export default {
       if (this.record?.url) {
         let blob = this.record.blob
         this.$emit('getBlobFromPlayerSource', blob)
+
         return this.record.url
       } else if (this.src) {
         return this.src
@@ -131,6 +133,7 @@ export default {
             this.player.pause() // Tvunget att gör för mobile
             setTimeout(() => {
               this.player.play() // Tvunget att gör för mobile
+
               this.isPlaying = !this.isPlaying
             }, 100)
           })
@@ -139,6 +142,7 @@ export default {
           })
       }
     },
+
     _resetProgress() {
       if (this.isPlaying) {
         this.player.pause()

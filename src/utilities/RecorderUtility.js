@@ -3,14 +3,21 @@
 export default class Recorder {
   constructor() {
     this.mediaRecorder = null
-
+    this.userAgentIpadIphone = /iPad|iPhone|iPod/.test(navigator.userAgent)
     this.chunks = []
+    // this.media = {
+    //   tag: 'audio',
+    //   type: this.userAgentIpadIphone ? 'audio/mpeg' : 'audio/webm; codecs=opus',
+    //   ext: this.userAgentIpadIphone ? '.mpeg' : '.webm',
+    //   gUM: { audio: true },
+    // }
     this.media = {
       tag: 'audio',
-      type: 'audio/webm; codecs=opus',
-      ext: '.webm',
+      type: 'audio/mpeg',
+      ext: '.mpeg',
       gUM: { audio: true },
     }
+
     this.isPause = false
     this.isRecording = false
     this.blob = null
@@ -80,6 +87,15 @@ export default class Recorder {
       duration: this.duration,
     }
   }
+  // getUrl() {
+  //   let url
+  //   try {
+  //     url = webkitURL.createObjectURL(this.blob) // eslint-disable-line
+  //   } catch (error) {
+  //     url = URL.createObjectURL(this.blob)
+  //   }
+  //   return url
+  // }
 }
 
 export function convertTimeMMSS(seconds) {

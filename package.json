@@ -25,7 +25,7 @@
     "version": "echo $npm_package_version",
     "serve": "vue-cli-service serve",
     "clear:dist": "rimraf dist",
-    "buildfordeploy": "vue-cli-service build",
+    "buildfordeploy": "vue-cli-service build && firebase deploy",
     "build": "npm run clear:dist && NODE_ENV=production rollup -c",
     "build:demo": "vue-cli-service build --dest demo",
     "lint": "vue-cli-service lint",
